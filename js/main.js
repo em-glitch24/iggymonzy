@@ -130,9 +130,9 @@ document.getElementById("year").textContent = new Date().getFullYear();
    Fill in the three values below (see the setup steps)
    --------------------------------------------------------- */
 const EMAILJS = {
-  publicKey: "YOUR_PUBLIC_KEY",
-  serviceId: "YOUR_SERVICE_ID",
-  templateId: "YOUR_TEMPLATE_ID",
+  publicKey: "4Q5hwHzdQjtlNOJ-G",
+  serviceId: "service_rckkq2x",
+  templateId: "template_m7r5vs9",
 };
 
 (function () {
