@@ -217,3 +217,123 @@ const EMAILJS = {
     }
   });
 })();
+
+/* ---------------------------------------------------------
+   6. SUPPLY COMBOBOX (dropdown you can also type in)
+   The options are read from the supply cards, so adding or
+   renaming a card updates the dropdown automatically.
+   --------------------------------------------------------- */
+(function () {
+  const field = document.getElementById("q-combo");
+  const input = document.getElementById("q-interest");
+  const list = document.getElementById("q-options");
+  const dialog = document.getElementById("quote-modal");
+  if (!field || !input || !list) return;
+
+  const toggle = field.querySelector(".qm-combo-btn");
+  const supplies = [...document.querySelectorAll(".sp-card h3")].map((h) =>
+    h.textContent.trim(),
+  );
+  let shown = [];
+  let active = -1;
+
+  function setActive(i) {
+    const items = list.children;
+    if (items[active]) items[active].removeAttribute("aria-selected");
+    active = i;
+    if (items[i]) {
+      items[i].setAttribute("aria-selected", "true");
+      input.setAttribute("aria-activedescendant", items[i].id);
+      items[i].scrollIntoView({ block: "nearest" });
+    } else {
+      input.removeAttribute("aria-activedescendant");
+    }
+  }
+
+  function render(filter) {
+    const q = filter.trim().toLowerCase();
+    shown = q
+      ? supplies.filter((s) => s.toLowerCase().includes(q))
+      : supplies.slice();
+    list.innerHTML = "";
+    shown.forEach((name, i) => {
+      const li = document.createElement("li");
+      li.id = "q-opt-" + i;
+      li.setAttribute("role", "option");
+      li.textContent = name;
+      if (name.toLowerCase() === input.value.trim().toLowerCase())
+        li.className = "is-current";
+      li.addEventListener("click", () => choose(name));
+      list.appendChild(li);
+    });
+    active = -1;
+    input.removeAttribute("aria-activedescendant");
+  }
+
+  function open(showAll) {
+    render(showAll ? "" : input.value);
+    if (!shown.length) return close(); // nothing matches: just let them type
+    list.hidden = false;
+    field.classList.add("is-open");
+    input.setAttribute("aria-expanded", "true");
+    const cur = list.querySelector(".is-current");
+    if (cur) setActive([...list.children].indexOf(cur));
+  }
+
+  function close() {
+    list.hidden = true;
+    field.classList.remove("is-open");
+    input.setAttribute("aria-expanded", "false");
+    active = -1;
+    input.removeAttribute("aria-activedescendant");
+  }
+
+  function choose(name) {
+    input.value = name;
+    close();
+    input.focus();
+  }
+
+  // keep focus in the text box while clicking the list or arrow
+  list.addEventListener("mousedown", (e) => e.preventDefault());
+  toggle.addEventListener("mousedown", (e) => e.preventDefault());
+
+  toggle.addEventListener("click", () => {
+    if (list.hidden) {
+      input.focus();
+      open(true);
+    } else close();
+  });
+  input.addEventListener("click", () => {
+    if (list.hidden) open(true);
+  });
+  input.addEventListener("input", () => open(false)); // typing filters the list
+  input.addEventListener("blur", close);
+
+  input.addEventListener("keydown", (e) => {
+    const n = shown.length;
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      if (list.hidden) open(true);
+      else setActive((active + 1) % n);
+    } else if (e.key === "ArrowUp" && !list.hidden) {
+      e.preventDefault();
+      setActive((active - 1 + n) % n);
+    } else if (e.key === "Enter" && !list.hidden && active >= 0) {
+      e.preventDefault();
+      choose(shown[active]);
+    } else if (e.key === "Escape" && !list.hidden) {
+      e.preventDefault();
+      e.stopPropagation();
+      close(); // Esc closes the list first, not the modal
+    }
+  });
+
+  dialog.addEventListener("cancel", (e) => {
+    if (!list.hidden) {
+      e.preventDefault();
+      close();
+    }
+  });
+  dialog.addEventListener("close", close);
+})();

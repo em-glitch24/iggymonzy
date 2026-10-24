@@ -731,14 +731,40 @@
               </label>
               <input id="q-phone" name="phone" type="tel" autocomplete="tel" />
             </div>
-            <div class="qm-field">
+            <div class="qm-field qm-combo" id="q-combo">
               <label for="q-interest">Supplies you need</label>
-              <input
-                id="q-interest"
-                name="interest"
-                type="text"
-                placeholder="CCTV supplies"
-              />
+              <div class="qm-combo-box">
+                <input
+                  id="q-interest"
+                  name="interest"
+                  type="text"
+                  role="combobox"
+                  aria-expanded="false"
+                  aria-controls="q-options"
+                  aria-autocomplete="list"
+                  autocomplete="off"
+                  placeholder="Pick one or type your own"
+                />
+                <button
+                  type="button"
+                  class="qm-combo-btn"
+                  tabindex="-1"
+                  aria-label="Show all supplies"
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="m6 9 6 6 6-6" />
+                  </svg>
+                </button>
+              </div>
+              <ul class="qm-options" id="q-options" role="listbox" hidden></ul>
             </div>
             <div class="qm-field qm-full">
               <label for="q-message">Message</label>
